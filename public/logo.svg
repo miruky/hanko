@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">hanko - 印影のロゴ</title>
+  <style>
+    .bg { fill: #f4efe6; }
+    .seal { fill: #c5352b; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #16140f; }
+      .seal { fill: #e0594b; }
+    }
+  </style>
+  <mask id="cut">
+    <circle cx="64" cy="64" r="46" fill="#fff" />
+    <circle cx="64" cy="64" r="31" fill="none" stroke="#000" stroke-width="6" />
+    <rect x="53" y="53" width="22" height="22" rx="4" fill="#000" />
+  </mask>
+  <rect class="bg" width="128" height="128" rx="28" />
+  <circle class="seal" cx="64" cy="64" r="46" mask="url(#cut)" />
+</svg>
