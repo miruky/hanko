@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 300" role="img" aria-labelledby="arch-title">
+  <title id="arch-title">hankoの構成図。入力フォームの内容をseal.tsが型と検証で受け、layout.tsが升目に割り付け、svggen.tsがSVGを生成してプレビューと保存に渡す。</title>
+  <style>
+    .box { fill: #fbf8f2; stroke: #e4ddcf; stroke-width: 1.5; }
+    .name { fill: #211d17; font: 600 15px system-ui, sans-serif; }
+    .label { fill: #6f685c; font: 12.5px system-ui, sans-serif; }
+    .edge { stroke: #b9af9c; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+    #arrow path { fill: #b9af9c; }
+    @media (prefers-color-scheme: dark) {
+      .box { fill: #211e18; stroke: #322e26; }
+      .name { fill: #ece7dc; }
+      .label { fill: #9a9485; }
+      .edge { stroke: #5b5446; }
+      #arrow path { fill: #5b5446; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" />
+    </marker>
+  </defs>
+
+  <rect class="box" x="32" y="104" width="170" height="92" rx="14" />
+  <text class="name" x="117" y="140" text-anchor="middle">フォーム</text>
+  <text class="label" x="117" y="162" text-anchor="middle">app.ts</text>
+  <text class="label" x="117" y="180" text-anchor="middle">主文・形・彫り・色</text>
+
+  <rect class="box" x="242" y="104" width="170" height="92" rx="14" />
+  <text class="name" x="327" y="140" text-anchor="middle">seal.ts</text>
+  <text class="label" x="327" y="162" text-anchor="middle">型・検証・</text>
+  <text class="label" x="327" y="180" text-anchor="middle">localStorage保存</text>
+
+  <rect class="box" x="452" y="104" width="170" height="92" rx="14" />
+  <text class="name" x="537" y="140" text-anchor="middle">layout.ts</text>
+  <text class="label" x="537" y="162" text-anchor="middle">字を升目に割付</text>
+  <text class="label" x="537" y="180" text-anchor="middle">(縦書きの読み順)</text>
+
+  <rect class="box" x="662" y="104" width="170" height="92" rx="14" />
+  <text class="name" x="747" y="140" text-anchor="middle">svggen.ts</text>
+  <text class="label" x="747" y="162" text-anchor="middle">朱文・白文・回文</text>
+  <text class="label" x="747" y="180" text-anchor="middle">かすれのSVG生成</text>
+
+  <path class="edge" d="M202 150 H238" />
+  <path class="edge" d="M412 150 H448" />
+  <path class="edge" d="M622 150 H658" />
+
+  <path class="edge" d="M747 196 V236" />
+  <rect class="box" x="612" y="240" width="270" height="44" rx="12" />
+  <text class="name" x="747" y="268" text-anchor="middle">プレビュー・SVG保存・コピー</text>
+</svg>
