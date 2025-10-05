@@ -12,8 +12,15 @@ import {
   type SealStore,
   type SealStyle,
 } from './lib/seal';
+import { modeLabel, type ThemeMode, ThemeController } from './lib/theme';
 import { sealSvg } from './lib/svggen';
 import { icons } from './icons';
+
+const THEME_ICONS: Record<ThemeMode, string> = {
+  auto: icons.themeAuto,
+  light: icons.themeLight,
+  dark: icons.themeDark,
+};
 
 const ESCAPES: Record<string, string> = {
   '&': '&amp;',
@@ -59,6 +66,7 @@ export interface AppDeps {
 
 export function createApp({ root, store, initialSeal }: AppDeps): void {
   const seal = initialSeal;
+  const theme = new ThemeController();
 
   function save(): void {
     store.save(seal);
@@ -124,8 +132,12 @@ export function createApp({ root, store, initialSeal }: AppDeps): void {
     root.innerHTML = `
       <header class="site-header">
         <div class="site-header-inner">
-          <span class="brand">${icons.logo}<span>hanko</span></span>
-          <span class="tagline">テキストから印影をつくる</span>
+          <span class="brand">${icons.logo}<span class="brand-text"><span class="brand-kicker">篆刻 / Seal</span><span class="brand-name">hanko</span></span></span>
+          <div class="header-right">
+            <span class="tagline">テキストから印影をつくる</span>
+            <button type="button" class="icon-button" id="theme-toggle"
+              aria-label="配色テーマ: ${modeLabel(theme.mode)}(クリックで切り替え)">${THEME_ICONS[theme.mode]}</button>
+          </div>
         </div>
       </header>
       <main class="site-main">
@@ -247,6 +259,13 @@ export function createApp({ root, store, initialSeal }: AppDeps): void {
     root.querySelector('#download')?.addEventListener('click', () => download());
     root.querySelector<HTMLElement>('#copy')?.addEventListener('click', (e) => {
       void copy(e.currentTarget as HTMLElement);
+    });
+
+    const themeBtn = root.querySelector<HTMLButtonElement>('#theme-toggle');
+    themeBtn?.addEventListener('click', () => {
+      const mode = theme.cycle();
+      themeBtn.innerHTML = THEME_ICONS[mode];
+      themeBtn.setAttribute('aria-label', `配色テーマ: ${modeLabel(mode)}(クリックで切り替え)`);
     });
   }
 

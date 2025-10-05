@@ -100,6 +100,27 @@ export function normalizeSeal(spec: SealSpec): SealSpec {
   return { ...spec, border: Math.min(1, Math.max(0, spec.border)) };
 }
 
+/**
+ * 見た目だけをランダムに振った spec を返す。主文・回文・紙地などの内容は base から
+ * 引き継ぎ、形・彫り・字面・並べ方・色・縁・かすれを選び直す。rand は 0〜1 を返す関数で、
+ * テストでは固定値を渡して結果を確かめられる。
+ */
+export function randomSeal(base: SealSpec, rand: () => number = Math.random): SealSpec {
+  const pick = <T>(arr: readonly T[]): T =>
+    arr[Math.min(arr.length - 1, Math.floor(rand() * arr.length))]!;
+  return normalizeSeal({
+    ...base,
+    shape: pick(SHAPES),
+    style: pick(STYLES),
+    font: pick(FONTS),
+    layout: pick(LAYOUTS),
+    color: pick(COLOR_PRESETS).value,
+    // 0〜1 を 0.05 刻みに丸める
+    border: Math.round(rand() * 20) / 20,
+    weathered: rand() < 0.6,
+  });
+}
+
 export function deserializeSeal(json: string): SealSpec | null {
   let parsed: unknown;
   try {

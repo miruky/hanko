@@ -1,36 +1,45 @@
-/* 和紙のような温かい地に朱の一点アクセント。ライト・ダークはOS設定に追従する。
-   余白は8pxの倍数で揃え、厚い枠線や濃い影に頼らず階層を作る。 */
+/* 和紙のような温かい地に朱の一点アクセント。テーマは data-theme(light/dark)で
+   切り替え、描画前の head スクリプトが解決して載せ替える。余白は8pxの倍数で揃え、
+   厚い枠線や濃い影に頼らず、罫線と余白と明朝の見出しで階層を作る。 */
 
 :root {
   color-scheme: light dark;
-  --bg: #f4efe6;
-  --surface: #fbf8f2;
+  --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+  --font-serif: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+
+  --bg: #f1ebe0;
+  --surface: #faf6ef;
   --paper: #fdfbf6;
   --ink: #211d17;
-  --muted: #6f685c;
-  --line: #e4ddcf;
-  --line-strong: #d6cdba;
-  --accent: #c5352b;
+  --ink-soft: #433d33;
+  --muted: #6d665a;
+  --line: #e3dccd;
+  --line-strong: #d4cbb7;
+  --accent: #bb342a;
   --accent-ink: #ffffff;
-  --accent-soft: #f3e0dc;
+  --accent-text: #a02e26;
+  --accent-soft: #f1ddd8;
   --shadow-sm: 0 1px 2px rgb(33 29 23 / 0.05);
-  --shadow-lg: 0 24px 60px -28px rgb(33 29 23 / 0.4);
-  --radius: 16px;
+  --shadow-lg: 0 24px 60px -30px rgb(33 29 23 / 0.34);
+  --radius: 14px;
+  --radius-sm: 9px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16140f;
-    --surface: #211e18;
-    --paper: #ece5d6;
-    --ink: #ece7dc;
-    --muted: #9a9485;
-    --line: #322e26;
-    --line-strong: #423d32;
-    --accent: #e0594b;
-    --accent-soft: #3a241f;
-    --shadow-lg: 0 24px 60px -28px rgb(0 0 0 / 0.7);
-  }
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #14120d;
+  --surface: #1f1c16;
+  --paper: #ece5d6;
+  --ink: #ece7dc;
+  --ink-soft: #cbc4b4;
+  --muted: #9a9485;
+  --line: #2f2b23;
+  --line-strong: #403a30;
+  --accent: #e0594b;
+  --accent-text: #ec8073;
+  --accent-soft: #3a241f;
+  --shadow-lg: 0 24px 60px -28px rgb(0 0 0 / 0.7);
 }
 
 * {
@@ -42,10 +51,11 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 :focus-visible {
@@ -74,28 +84,87 @@ svg {
   margin: 0 auto;
   padding: 14px 24px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   gap: 14px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 0.04em;
+  gap: 11px;
 }
 
 .brand svg {
-  width: 22px;
-  height: 22px;
-  color: var(--accent);
+  width: 26px;
+  height: 26px;
+  color: var(--accent-text);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.brand-kicker {
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .tagline {
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .tagline {
+    display: none;
+  }
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.16s var(--ease),
+    border-color 0.16s var(--ease),
+    transform 0.12s var(--ease);
+}
+
+.icon-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.icon-button:hover {
+  color: var(--accent-text);
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .site-main {
@@ -142,7 +211,6 @@ svg {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 24px;
-  box-shadow: var(--shadow-sm);
 }
 
 .form-panel {
@@ -174,14 +242,20 @@ svg {
   width: 100%;
   padding: 9px 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  background: var(--paper);
+  border-radius: var(--radius-sm);
+  /* 地は --bg を使う。--paper は印影の紙(ダークでも明色)専用で、
+     入力欄に使うとダークで明色地+明色文字になり読めなくなる。 */
+  background: var(--bg);
   color: var(--ink);
   font: inherit;
   font-size: 0.95rem;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
+}
+
+.field input::placeholder {
+  color: var(--muted);
 }
 
 .field input:focus {
@@ -241,7 +315,7 @@ svg {
 
 .seg.active {
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-text);
   box-shadow: var(--shadow-sm);
 }
 
