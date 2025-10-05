@@ -7,10 +7,25 @@
       name="description"
       content="姓名や雅号を入れると、丸印・角印の印影風SVGをその場で作るジェネレータ。朱文・白文、回文、かすれに対応"
     />
-    <meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#16140f" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f1ebe0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14120d" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>hanko | 印影風SVGジェネレータ</title>
+    <script>
+      // 描画前に保存テーマを解決して data-theme を載せ、初回のちらつきを防ぐ。
+      (function () {
+        try {
+          var raw = localStorage.getItem('hanko.theme.v1');
+          var mode = raw === 'light' || raw === 'dark' || raw === 'auto' ? raw : 'auto';
+          var dark =
+            mode === 'dark' ||
+            (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        } catch (e) {
+          /* localStorage 不可の環境は既定(ライト)で描く */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>
