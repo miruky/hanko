@@ -4,7 +4,9 @@
 
 import {
   COLOR_PRESETS,
+  defaultSeal,
   MAX_CHARS,
+  randomSeal,
   type SealFont,
   type SealLayout,
   type SealShape,
@@ -77,14 +79,56 @@ export function createApp({ root, store, initialSeal }: AppDeps): void {
     if (stage) stage.innerHTML = sealSvg(seal);
   }
 
+  function baseName(): string {
+    return seal.text.trim() === '' ? 'hanko' : seal.text.trim();
+  }
+
   function download(): void {
-    const name = (seal.text.trim() === '' ? 'hanko' : seal.text.trim()) + '.svg';
     const url = URL.createObjectURL(new Blob([sealSvg(seal)], { type: 'image/svg+xml' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = name;
+    a.download = `${baseName()}.svg`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  // SVGをラスタ化してPNGで保存する。root の <svg> には viewBox しか無いので、
+  // ブラウザ差を避けるため明示の寸法を差し込んでから画像化する。
+  function downloadPng(size = 1024): void {
+    const sized = sealSvg(seal).replace('<svg ', `<svg width="${size}" height="${size}" `);
+    const url = URL.createObjectURL(new Blob([sized], { type: 'image/svg+xml;charset=utf-8' }));
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const purl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = purl;
+        a.download = `${baseName()}.png`;
+        a.click();
+        URL.revokeObjectURL(purl);
+      }, 'image/png');
+    };
+    img.onerror = () => URL.revokeObjectURL(url);
+    img.src = url;
+  }
+
+  function randomize(): void {
+    Object.assign(seal, randomSeal(seal));
+    save();
+    render();
+  }
+
+  function reset(): void {
+    Object.assign(seal, { ...defaultSeal(), text: seal.text });
+    save();
+    render();
   }
 
   async function copy(button: HTMLElement): Promise<void> {
@@ -143,6 +187,10 @@ export function createApp({ root, store, initialSeal }: AppDeps): void {
       <main class="site-main">
         <div class="workspace">
           <section class="panel form-panel" aria-label="印影の設定">
+            <div class="form-toolbar">
+              <button type="button" class="chip" id="randomize">${icons.shuffle}<span>おまかせ</span></button>
+              <button type="button" class="chip" id="reset">${icons.reset}<span>リセット</span></button>
+            </div>
             <label class="field"><span>主文(${MAX_CHARS}字まで)</span>
               <input id="text" value="${esc(seal.text)}" maxlength="${MAX_CHARS}" placeholder="姓名・雅号" autocomplete="off"/></label>
 
@@ -182,6 +230,7 @@ export function createApp({ root, store, initialSeal }: AppDeps): void {
             <div class="preview-stage"><div id="preview" class="preview"></div></div>
             <div class="actions">
               <button type="button" class="button" id="download">${icons.download}<span>SVGを保存</span></button>
+              <button type="button" class="button ghost" id="download-png">${icons.download}<span>PNGを保存</span></button>
               <button type="button" class="button ghost" id="copy">${icons.copy}<span>SVGをコピー</span></button>
             </div>
           </section>
@@ -257,6 +306,9 @@ export function createApp({ root, store, initialSeal }: AppDeps): void {
     }
 
     root.querySelector('#download')?.addEventListener('click', () => download());
+    root.querySelector('#download-png')?.addEventListener('click', () => downloadPng());
+    root.querySelector('#randomize')?.addEventListener('click', () => randomize());
+    root.querySelector('#reset')?.addEventListener('click', () => reset());
     root.querySelector<HTMLElement>('#copy')?.addEventListener('click', (e) => {
       void copy(e.currentTarget as HTMLElement);
     });
